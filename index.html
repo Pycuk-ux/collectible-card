@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#050603" />
+    <title>Ruslan Iulaev — UX/UI Engineer</title>
+    <meta name="description" content="Interactive 3D holographic collectible card." />
+  </head>
+  <body>
+    <canvas id="scene" aria-label="3D collectible card of Ruslan Iulaev, UX/UI Engineer"></canvas>
+    <div id="loader" aria-hidden="true"><span></span></div>
+    <p class="hint">
+      <span class="hint-desktop">Move the cursor · click to flip</span>
+      <span class="hint-touch">Tilt your phone · tap to flip</span>
+    </p>
+    <button id="motion" type="button" hidden>Enable motion</button>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
