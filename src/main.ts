@@ -4,6 +4,7 @@ import { TiltInput } from "./input";
 import {
   CARD,
   CARD_BASE,
+  CARD_BACK,
   DECALS,
   EXTRAS,
   HOLO,
@@ -48,9 +49,10 @@ function load(url: string) {
   });
 }
 
-const [pageBgTex, baseTex, holoTex, bgTex, photoTex, scanTex, decalTexes, extraTexes] = await Promise.all([
+const [pageBgTex, baseTex, backTex, holoTex, bgTex, photoTex, scanTex, decalTexes, extraTexes] = await Promise.all([
   load(PAGE_BG),
   load(CARD_BASE),
+  load(CARD_BACK),
   load(HOLO),
   load(WINDOW_LAYERS.bg.src),
   load(WINDOW_LAYERS.photo.src),
@@ -191,30 +193,10 @@ DECALS.forEach((d, i) => {
   frontFace.add(mesh);
 });
 
-// Back of the card.
+// Back of the card: the back artwork under the same holographic laminate as
+// the front (shared material, so pattern, strength and tilt response match).
 {
-  const c = document.createElement("canvas");
-  c.width = W;
-  c.height = H;
-  const g = c.getContext("2d")!;
-  g.drawImage(baseTex.image as CanvasImageSource, 0, 0, W, H);
-  g.fillStyle = "rgba(0, 4, 49, 0.9)";
-  g.beginPath();
-  g.roundRect(WINDOW.x, 60, WINDOW.w, H - 120, 28);
-  g.fill();
-  g.strokeStyle = "#DEEF28";
-  g.lineWidth = 4;
-  g.stroke();
-  const name = decalTexes[DECALS.findIndex((d) => d.name === "name")].image as CanvasImageSource;
-  g.drawImage(name, (W - 948) / 2, H / 2 - 120, 948, 71);
-  const role = DECALS.find((d) => d.name === "uix-ui")!;
-  const roleImg = decalTexes[DECALS.indexOf(role)].image as CanvasImageSource;
-  g.drawImage(roleImg, (W - role.w) / 2, H / 2 + 10, role.w, role.h);
-  const tex = new THREE.CanvasTexture(c);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  tex.anisotropy = maxAniso;
-
-  const back = new THREE.Mesh(face, new THREE.MeshBasicMaterial({ map: tex, transparent: true, ...layer }));
+  const back = new THREE.Mesh(face, new THREE.MeshBasicMaterial({ map: backTex, transparent: true, ...layer }));
   back.rotation.y = Math.PI;
   back.position.z = -FRONT - 0.1;
   back.renderOrder = ORDER.base;

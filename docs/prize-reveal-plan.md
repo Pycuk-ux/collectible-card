@@ -1,4 +1,4 @@
-# Next: "Pick a card" prize reveal
+# Next: prize reveal (trading-card pack)
 
 Status: planning. Nothing built yet. The live card at
 https://pycuk-ux.github.io/collectible-card/ stays as it is until this is ready.
@@ -10,18 +10,45 @@ face-down cards, picks one, and it opens with a light-burst animation to reveal
 their prize. Reference: a gift-box opening video (idle → tap → shake → light
 burst + flash → prize swings in → idle shine, about 17 s in total).
 
-## Flow
+## Chosen direction: open a foil card pack
 
-1. **Choose:** 3–5 cards face-down in a fan/row, floating and tilting with the
-   phone. "Pick one".
-2. **Select:** the chosen card lifts and centres; the others fade and drop away.
-3. **Reveal:** short shake, light bursts from the edges, the card flips to the
-   prize with a flash and sparkles.
-4. **Settle:** the prize card becomes interactive like the current card, with
+Visual reference: a glossy foil trading-card pack (crimped top and bottom
+seals, soft specular highlights), like a "Trading Card Pack" mockup. The pack
+reads instantly as "something to open", which keeps the UX simple: one clear
+action instead of a choice first.
+
+The back of the printed card says "Claim your prize" with the QR code; that QR
+opens this page.
+
+### Flow
+
+1. **Sealed pack:** the pack floats in the centre and tilts with the phone;
+   foil highlights slide across it. Button / hint: "Tear to open".
+2. **Tear:** the user swipes across the top seal (or taps the button). The top
+   strip tears off along the crimp and flies away.
+3. **Light:** light pours out of the opening, then a white flash.
+4. **Reveal:** the prize card slides up out of the pack and settles in the
+   centre; the empty pack drops away.
+5. **Settle:** the prize card becomes interactive like the current card, with
    prize text and a button.
 
-The tap on a card is the moment to ask for iPhone motion permission and to
+The first tap/swipe is the moment to ask for iPhone motion permission and to
 unlock sound.
+
+### Still to decide
+
+- Does the pack hold **one** prize card, or **3–5** that fan out so the user
+  picks one (the earlier "pick a card" idea, now after the pack opens)?
+- The pack artwork must be your own design. The reference is a stock mockup
+  (Yellow Images), so its watermark text and styling can't be used as-is.
+
+### Pack build notes
+
+- The foil look comes from the same approach as the card: artwork PNG + a
+  shader for moving specular highlights, plus a soft normal/bump map for the
+  crinkles so light slides over them.
+- Split into two meshes along the tear line (top strip + body) so the strip
+  can fly off; a jagged edge texture on both sides of the cut.
 
 ## Open decisions (needed before building)
 
@@ -39,8 +66,11 @@ unlock sound.
 
 ## Assets to prepare (Figma → transparent PNG)
 
-- Card back (shared by all face-down cards).
-- One front per prize. Layered like the current card for parallax, or one
+- Pack front artwork (and back, if it can be turned), same proportions as
+  the pack shape, with the crimped seals.
+- Pack top strip and pack body as separate layers, split along the tear line.
+- Optional: a grey "crinkle" map (light = raised) for the foil highlights.
+- Prize card front(s): layered like the current card for parallax, or one
   flat PNG each for simplicity.
 - Light rays (radial burst), soft glow blob, 2–3 sparkle/dust shapes.
 - Text + button for the choose and reveal screens.
@@ -50,12 +80,12 @@ unlock sound.
 
 | Step | Duration | Notes |
 |---|---|---|
-| Cards deal in | 0.1 s stagger | slide into the fan on load |
-| Select: chosen lifts + centres | 0.5 s | others fade 0.3 s |
+| Pack idle | loop | gentle float, foil highlights follow tilt |
 | Anticipation shake | 0.4 s | 3 quick wiggles, ±4° |
+| Tear strip off | 0.4 s | follows the swipe, then flies up and away |
 | Light burst | ~0.6 s peak | rays scale 0.3 → 1.5, slow rotation, glow |
 | White flash | 0.15 s in, 0.5 s out | covers the flip |
-| Flip to prize | 0.8 s | slight overshoot, ends centred |
+| Card slides out of the pack | 0.8 s | slight overshoot, ends centred; pack drops away |
 
 ## QR printing checklist
 
@@ -73,7 +103,7 @@ unlock sound.
 ## To send when ready
 
 1. Prize option A / B / C.
-2. Number of cards and the prizes.
-3. Card back + prize fronts (Figma link or PNGs).
+2. One prize card in the pack, or 3–5 to pick from, and what the prizes are.
+3. Pack artwork (front, top strip, body) + prize card fronts (Figma link or PNGs).
 4. Motion timings, or "use your judgement" (based on the reference video).
 5. The QR domain.
