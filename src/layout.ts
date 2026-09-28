@@ -100,23 +100,22 @@ export interface Extra {
   width: number;
   /**
    * Depth toward the viewer (negative = behind the card). Position and size are
-   * compensated so it still lands on x/y/width. Keep |z| above ~750: that is
-   * the furthest the card's corners reach while tilting and flipping, so the
-   * card can never pass through a coin.
+   * compensated so it still lands on x/y/width. They turn with the card as
+   * one scene, so their movement comes only from this real depth: bigger |z|
+   * = more parallax. Draw order is fixed (behind stays behind, in front stays
+   * in front), so the card can never visibly cross them, even mid-spin.
    */
   z: number;
   /** In-plane rotation, radians (counter-clockwise). */
   rotation: number;
-  /** Sideways drift with tilt/cursor, px. Larger for things closer to the viewer. */
-  drift: number;
   /** Depth-of-field blur (texture mip bias). 0 = sharp. */
   blur: number;
 }
 
 export const EXTRAS: Extra[] = [
-  { name: "bitcoin", src: asset("extras/bitcoin.png"), x: -546, y: 834, width: 310, z: -800, rotation: 0, drift: -24, blur: 0 },
-  { name: "chinese-coin", src: asset("extras/chinese-coin.png"), x: 566, y: -902, width: 362, z: 800, rotation: 0, drift: 40, blur: 0 },
-  { name: "unicorn", src: asset("extras/unicorn.webp"), x: -346, y: -1291, width: 740, z: 950, rotation: 0.32, drift: 64, blur: 1.6 },
+  { name: "bitcoin", src: asset("extras/bitcoin.png"), x: -546, y: 834, width: 310, z: -300, rotation: 0, blur: 0 },
+  { name: "chinese-coin", src: asset("extras/chinese-coin.png"), x: 566, y: -902, width: 362, z: 300, rotation: 0, blur: 0 },
+  { name: "unicorn", src: asset("extras/unicorn.webp"), x: -346, y: -1291, width: 740, z: 500, rotation: 0.32, blur: 1.6 },
 ];
 
 /** Card-px (top-left origin, y down) → local world coords (card centre origin, y up). */

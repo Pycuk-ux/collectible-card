@@ -115,7 +115,8 @@ scene.add(cardRoot);
     curveSegments: 16,
   });
   geo.translate(0, 0, -(T - bevel * 2) / 2);
-  const edge = new THREE.MeshStandardMaterial({ color: CARD.edgeColor, roughness: 0.35, metalness: 0.15 });
+  // Transparent pass (still fully opaque) so it draws after the coins behind it.
+  const edge = new THREE.MeshStandardMaterial({ color: CARD.edgeColor, roughness: 0.35, metalness: 0.15, transparent: true });
   const body = new THREE.Mesh(geo, edge);
   body.renderOrder = ORDER.body;
   card.add(body);
@@ -126,7 +127,7 @@ const layer = { depthTest: false, depthWrite: false } as const;
 
 // Front print: the green glitch art (bg-image-green).
 {
-  const front = new THREE.Mesh(face, new THREE.MeshBasicMaterial({ map: baseTex, ...layer }));
+  const front = new THREE.Mesh(face, new THREE.MeshBasicMaterial({ map: baseTex, transparent: true, ...layer }));
   front.position.z = FRONT + 0.1;
   front.renderOrder = ORDER.base;
   frontFace.add(front);
@@ -178,7 +179,7 @@ const holoMat = new THREE.ShaderMaterial({
 }
 
 // Raised elements: a few px above the face, so they separate slightly on tilt.
-const decals = DECALS.map((d, i) => {
+DECALS.forEach((d, i) => {
   const { cx, cy } = toLocal(d.x, d.y, d.w, d.h);
   const mesh = new THREE.Mesh(
     new THREE.PlaneGeometry(d.w, d.h),
@@ -187,7 +188,6 @@ const decals = DECALS.map((d, i) => {
   mesh.position.set(cx, cy, FRONT + d.lift);
   mesh.renderOrder = ORDER.decals + i;
   frontFace.add(mesh);
-  return { mesh, baseX: cx, baseY: cy, lift: d.lift };
 });
 
 // Back of the card.
@@ -213,7 +213,7 @@ const decals = DECALS.map((d, i) => {
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = maxAniso;
 
-  const back = new THREE.Mesh(face, new THREE.MeshBasicMaterial({ map: tex, ...layer }));
+  const back = new THREE.Mesh(face, new THREE.MeshBasicMaterial({ map: tex, transparent: true, ...layer }));
   back.rotation.y = Math.PI;
   back.position.z = -FRONT - 0.1;
   back.renderOrder = ORDER.base;
@@ -246,14 +246,17 @@ const extras = EXTRAS.map((e, i) => {
       uniforms: { map: { value: tex }, uBlur: { value: e.blur } },
       transparent: true,
       depthWrite: false,
-      // Behind the card: depth-tested so the card covers it. In front: always on top.
-      depthTest: e.z < 0,
+      // Fixed layering instead of depth testing: behind the card is always
+      // covered by it, in front is always on top.
+      depthTest: false,
     }),
   );
   mesh.rotation.z = e.rotation;
   mesh.renderOrder = e.z < 0 ? ORDER.behind : ORDER.front + i;
-  scene.add(mesh);
-  return { mesh, cfg: e, x: 0, y: 0 };
+  // Part of the tilting scene (not the spin), so card and coins move as one
+  // physical arrangement with true perspective between them.
+  cardRoot.add(mesh);
+  return { mesh, cfg: e };
 });
 
 // ─── Lights (only the extruded edge is lit) ─────────────────────────────────
@@ -298,8 +301,7 @@ function resize() {
 
   for (const ex of extras) {
     const ke = k(ex.cfg.z);
-    ex.x = ex.cfg.x * ke;
-    ex.y = EYE_Y + (ex.cfg.y - EYE_Y) * ke;
+    ex.mesh.position.set(ex.cfg.x * ke, EYE_Y + (ex.cfg.y - EYE_Y) * ke, ex.cfg.z);
     ex.mesh.scale.setScalar(ex.cfg.width * ke);
   }
 }
@@ -389,16 +391,6 @@ renderer.setAnimationLoop((now) => {
   // Viewed from the back the tilt reads mirrored.
   holoUniforms.uTilt.value.set(tilt.x * Math.cos(flip) + Math.sin(flip) * 0.8, tilt.y);
 
-  for (const d of decals) {
-    d.mesh.position.x = d.baseX + tilt.x * d.lift * 0.6;
-    d.mesh.position.y = d.baseY + tilt.y * d.lift * 0.6;
-  }
-
-  for (const ex of extras) {
-    ex.mesh.position.set(ex.x + tilt.x * ex.cfg.drift, ex.y + tilt.y * ex.cfg.drift, ex.cfg.z);
-    ex.mesh.rotation.y = tilt.x * 0.25;
-    ex.mesh.rotation.x = -tilt.y * 0.2;
-  }
 
   key.position.set(tilt.x * -600 + 300, tilt.y * -600 + 500, 900);
 

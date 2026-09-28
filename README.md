@@ -24,6 +24,7 @@ npm run dev
 - **Stage**: the page follows the phone mockup and the background never moves. `website-bg.png` (1565 × 2866) is
   the stage at card scale; the Bitcoin (behind the card), Chinese coin and
   blurred unicorn (in front) are placed by their mockup positions in `EXTRAS`
+  and tilt together with the card as one scene (movement comes only from real depth)
   (`public/extras/`).
 - **Input**: cursor on desktop, gyroscope on phones (iOS asks via an
   "Enable motion" button). With no input the card holds still. Swipe (or drag)
