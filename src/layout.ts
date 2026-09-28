@@ -99,6 +99,11 @@ export const MOTION = {
   gyroRangeDeg: 30,
   /** How quickly the card catches up with input. Higher = snappier. */
   smoothing: 6,
+  /**
+   * How much the coins and unicorn turn with the card (1 = fully, as one
+   * scene; 0.5 = half, so they move half as far). Was 1.
+   */
+  extrasFollow: 0.5,
   /** Swipe distance, as a fraction of screen width, for a half turn (front → back). */
   swipeHalfTurn: 0.55,
 };

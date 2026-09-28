@@ -237,6 +237,8 @@ scene.add(pageBg);
 
 // ─── Coins and unicorn ──────────────────────────────────────────────────────
 
+const extrasRoot = new THREE.Group();
+scene.add(extrasRoot);
 const extras = EXTRAS.map((e, i) => {
   const tex = extraTexes[i];
   const img = tex.image as { width: number; height: number };
@@ -254,9 +256,9 @@ const extras = EXTRAS.map((e, i) => {
   );
   mesh.rotation.z = e.rotation;
   mesh.renderOrder = e.z < 0 ? ORDER.behind : ORDER.front + i;
-  // Part of the tilting scene (not the spin), so card and coins move as one
-  // physical arrangement with true perspective between them.
-  cardRoot.add(mesh);
+  // Tilts with the card (not the spin) by MOTION.extrasFollow, so card and
+  // coins move as one physical arrangement with true perspective between them.
+  extrasRoot.add(mesh);
   return { mesh, cfg: e };
 });
 
@@ -380,6 +382,7 @@ renderer.setAnimationLoop((now) => {
   }
 
   cardRoot.rotation.set(-tilt.y * MAX_PITCH, tilt.x * MAX_YAW, 0);
+  extrasRoot.rotation.set(-tilt.y * MAX_PITCH * MOTION.extrasFollow, tilt.x * MAX_YAW * MOTION.extrasFollow, 0);
   card.rotation.y = flip;
 
   // Show only the face that points at the camera.
