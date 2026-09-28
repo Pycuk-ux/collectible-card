@@ -13,8 +13,14 @@ export class TiltInput {
   private target = { x: 0, y: 0 };
   private gyroBase: { beta: number; gamma: number } | null = null;
   private usingGyro = false;
+  /** While the card is being swiped, the pointer spins it instead of tilting it. */
+  paused = false;
 
-  constructor(private el: HTMLElement) {
+  constructor(
+    private el: HTMLElement,
+    private gyroRange = 22,
+    private smoothing = 7,
+  ) {
     el.addEventListener("pointermove", this.onPointer);
     el.addEventListener("pointerdown", this.onPointer);
     // Recentre gyro when the phone is rotated.
@@ -43,7 +49,7 @@ export class TiltInput {
 
   private onPointer = (e: PointerEvent) => {
     // On touch screens the gyro wins once it is producing data.
-    if (e.pointerType === "touch" && this.usingGyro) return;
+    if (this.paused || (e.pointerType === "touch" && this.usingGyro)) return;
     const r = this.el.getBoundingClientRect();
     this.target.x = clamp(((e.clientX - r.left) / r.width) * 2 - 1);
     this.target.y = clamp(-(((e.clientY - r.top) / r.height) * 2 - 1));
@@ -56,13 +62,13 @@ export class TiltInput {
     const gamma = landscape ? -e.beta : e.gamma;
     // First reading = how the user naturally holds the phone.
     if (!this.gyroBase) this.gyroBase = { beta, gamma };
-    this.target.x = clamp((gamma - this.gyroBase.gamma) / 22);
-    this.target.y = clamp((beta - this.gyroBase.beta) / 22);
+    this.target.x = clamp((gamma - this.gyroBase.gamma) / this.gyroRange);
+    this.target.y = clamp((beta - this.gyroBase.beta) / this.gyroRange);
     this.usingGyro = true;
   };
 
   update(dt: number) {
-    const k = 1 - Math.exp(-dt * 7);
+    const k = 1 - Math.exp(-dt * this.smoothing);
     this.value.x += (this.target.x - this.value.x) * k;
     this.value.y += (this.target.y - this.value.y) * k;
   }

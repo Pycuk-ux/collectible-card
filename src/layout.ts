@@ -74,6 +74,23 @@ export const PAGE_BG = asset("website-bg.png");
  */
 export const STAGE = { w: 1565, h: 2866, cardOffsetY: 93 };
 
+/**
+ * How far the card turns, and how much input it takes.
+ * The card tilts toward the cursor / follows the phone, up to these angles.
+ */
+export const MOTION = {
+  /** Max left/right turn, degrees (was 24). */
+  maxYawDeg: 12,
+  /** Max up/down turn, degrees (was 18). */
+  maxPitchDeg: 9,
+  /** Phone tilt (degrees) that produces the max turn. Higher = less sensitive. */
+  gyroRangeDeg: 22,
+  /** How quickly the card catches up with input. Higher = snappier. */
+  smoothing: 7,
+  /** Swipe distance, as a fraction of screen width, for a half turn (front → back). */
+  swipeHalfTurn: 0.55,
+};
+
 export interface Extra {
   name: string;
   src: string;
@@ -81,7 +98,12 @@ export interface Extra {
   x: number;
   y: number;
   width: number;
-  /** Depth toward the viewer (negative = behind the card). Position and size are compensated so it still lands on x/y/width. */
+  /**
+   * Depth toward the viewer (negative = behind the card). Position and size are
+   * compensated so it still lands on x/y/width. Keep |z| above ~750: that is
+   * the furthest the card's corners reach while tilting and flipping, so the
+   * card can never pass through a coin.
+   */
   z: number;
   /** In-plane rotation, radians (counter-clockwise). */
   rotation: number;
@@ -92,9 +114,9 @@ export interface Extra {
 }
 
 export const EXTRAS: Extra[] = [
-  { name: "bitcoin", src: asset("extras/bitcoin.png"), x: -546, y: 834, width: 310, z: -80, rotation: 0, drift: -30, blur: 0 },
-  { name: "chinese-coin", src: asset("extras/chinese-coin.png"), x: 566, y: -902, width: 362, z: 140, rotation: 0, drift: 45, blur: 0 },
-  { name: "unicorn", src: asset("extras/unicorn.webp"), x: -346, y: -1291, width: 740, z: 320, rotation: 0.32, drift: 80, blur: 1.6 },
+  { name: "bitcoin", src: asset("extras/bitcoin.png"), x: -546, y: 834, width: 310, z: -800, rotation: 0, drift: -30, blur: 0 },
+  { name: "chinese-coin", src: asset("extras/chinese-coin.png"), x: 566, y: -902, width: 362, z: 800, rotation: 0, drift: 45, blur: 0 },
+  { name: "unicorn", src: asset("extras/unicorn.webp"), x: -346, y: -1291, width: 740, z: 950, rotation: 0.32, drift: 80, blur: 1.6 },
 ];
 
 /** Card-px (top-left origin, y down) → local world coords (card centre origin, y up). */

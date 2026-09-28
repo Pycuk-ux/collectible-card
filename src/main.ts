@@ -7,6 +7,7 @@ import {
   DECALS,
   EXTRAS,
   HOLO,
+  MOTION,
   PAGE_BG,
   STAGE,
   WINDOW,
@@ -160,7 +161,7 @@ const holoUniforms = {
   uTilt: { value: new THREE.Vector2() },
   uSize: { value: new THREE.Vector2(W, H) },
   uRadius: { value: CARD.radius },
-  uStrength: { value: 0.5 },
+  uStrength: { value: 0.2 },
 };
 const holoMat = new THREE.ShaderMaterial({
   ...holoShader,
@@ -291,9 +292,9 @@ function resize() {
   const kb = k(BG_Z);
   const viewH = 2 * (dist - BG_Z) * tanHalf;
   const viewW = viewH * camera.aspect;
-  const cover = Math.max((viewW * 1.08) / (STAGE.w * kb), (viewH * 1.08) / (STAGE.h * kb), 1);
+  const cover = Math.max(viewW / (STAGE.w * kb), viewH / (STAGE.h * kb), 1);
   pageBg.scale.set(STAGE.w * kb * cover, STAGE.h * kb * cover, 1);
-  pageBg.userData.k = kb;
+  pageBg.position.set(0, EYE_Y, BG_Z);
 
   for (const ex of extras) {
     const ke = k(ex.cfg.z);
@@ -307,7 +308,7 @@ resize();
 
 // ─── Interaction ────────────────────────────────────────────────────────────
 
-const input = new TiltInput(document.body);
+const input = new TiltInput(document.body, MOTION.gyroRangeDeg, MOTION.smoothing);
 
 if (input.needsMotionPermission) {
   motionBtn.hidden = false;
@@ -319,21 +320,46 @@ if (input.needsMotionPermission) {
   void input.enableMotion();
 }
 
-// Tap / click flips the card.
-let flipTarget = 0;
+// Swipe left or right to spin the card, like flicking a real one. It follows
+// the finger while held, keeps the release speed, then settles on a face.
 let flip = 0;
+let flipTarget = 0;
 let flipVel = 0;
-let downAt = { x: 0, y: 0, t: 0 };
-canvas.addEventListener("pointerdown", (e) => (downAt = { x: e.clientX, y: e.clientY, t: performance.now() }));
-canvas.addEventListener("pointerup", (e) => {
-  const moved = Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y);
-  if (moved < 8 && performance.now() - downAt.t < 400) flipTarget = flipTarget === 0 ? Math.PI : 0;
+let drag: { x: number; flip: number; lastX: number; lastT: number; vel: number } | null = null;
+const radPerPx = () => Math.PI / (window.innerWidth * MOTION.swipeHalfTurn);
+
+canvas.addEventListener("pointerdown", (e) => {
+  canvas.setPointerCapture(e.pointerId);
+  drag = { x: e.clientX, flip, lastX: e.clientX, lastT: performance.now(), vel: 0 };
+  input.paused = true;
 });
+canvas.addEventListener("pointermove", (e) => {
+  if (!drag) return;
+  const now = performance.now();
+  const dtMs = Math.max(1, now - drag.lastT);
+  const v = ((e.clientX - drag.lastX) * radPerPx() * 1000) / dtMs;
+  drag.vel = drag.vel * 0.6 + v * 0.4;
+  drag.lastX = e.clientX;
+  drag.lastT = now;
+  flip = drag.flip + (e.clientX - drag.x) * radPerPx();
+});
+function release() {
+  if (!drag) return;
+  const vel = performance.now() - drag.lastT > 80 ? 0 : drag.vel;
+  // Where the spin would coast to, snapped to the nearest face (max one extra turn).
+  const coast = flip + THREE.MathUtils.clamp(vel * 0.18, -Math.PI * 1.5, Math.PI * 1.5);
+  flipTarget = Math.round(coast / Math.PI) * Math.PI;
+  flipVel = vel;
+  drag = null;
+  input.paused = false;
+}
+canvas.addEventListener("pointerup", release);
+canvas.addEventListener("pointercancel", release);
 
 // ─── Loop ───────────────────────────────────────────────────────────────────
 
-const MAX_YAW = 0.42;
-const MAX_PITCH = 0.32;
+const MAX_YAW = THREE.MathUtils.degToRad(MOTION.maxYawDeg);
+const MAX_PITCH = THREE.MathUtils.degToRad(MOTION.maxPitchDeg);
 const timer = new THREE.Timer();
 const normal = new THREE.Vector3();
 const quat = new THREE.Quaternion();
@@ -344,9 +370,11 @@ renderer.setAnimationLoop((now) => {
   input.update(dt);
   const tilt = input.value;
 
-  // Springy flip.
-  flipVel += ((flipTarget - flip) * 90 - flipVel * 14) * dt;
-  flip += flipVel * dt;
+  // Settle onto a face after a swipe.
+  if (!drag) {
+    flipVel += ((flipTarget - flip) * 60 - flipVel * 11) * dt;
+    flip += flipVel * dt;
+  }
 
   cardRoot.rotation.set(-tilt.y * MAX_PITCH, tilt.x * MAX_YAW, 0);
   card.rotation.y = flip;
@@ -372,8 +400,6 @@ renderer.setAnimationLoop((now) => {
     ex.mesh.rotation.x = -tilt.y * 0.2;
   }
 
-  const kb = pageBg.userData.k as number;
-  pageBg.position.set(-tilt.x * 60 * kb, EYE_Y - tilt.y * 60 * kb, BG_Z);
   key.position.set(tilt.x * -600 + 300, tilt.y * -600 + 500, 900);
 
   renderer.render(scene, camera);

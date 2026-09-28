@@ -21,12 +21,13 @@ npm run dev
   few px above the card surface (`DECALS[].lift`), so they separate slightly on tilt.
 - **Holographic laminate**: `holographic-layer.png` drives an additive rainbow
   foil, a gloss band and a glare that react to tilt (`src/shaders.ts`, strength in `src/main.ts`).
-- **Stage**: the page follows the phone mockup. `website-bg.png` (1565 × 2866) is
+- **Stage**: the page follows the phone mockup and the background never moves. `website-bg.png` (1565 × 2866) is
   the stage at card scale; the Bitcoin (behind the card), Chinese coin and
   blurred unicorn (in front) are placed by their mockup positions in `EXTRAS`
   (`public/extras/`).
 - **Input**: cursor on desktop, gyroscope on phones (iOS asks via an
-  "Enable motion" button). With no input the card holds still. Click or tap to flip.
+  "Enable motion" button). With no input the card holds still. Swipe (or drag)
+  left/right to spin it. All motion limits live in `MOTION` in `src/layout.ts`.
 
 ## Hosting
 
