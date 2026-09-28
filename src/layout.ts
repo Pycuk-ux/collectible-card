@@ -30,10 +30,10 @@ export interface WindowLayer {
 
 export const WINDOW_LAYERS = {
   /** Dark shape + curve lines. Its alpha is also the window mask. */
-  bg: { src: asset("card/moving-inside-elements.png"), w: 1102, h: 1429, depth: 24, zoom: 1.05 },
+  bg: { src: asset("card/moving-inside-elements.png"), w: 1102, h: 1429, depth: 16, zoom: 1.05 },
   photo: { src: asset("card/my-photo.png"), w: 1102, h: 1421, depth: 12, zoom: 1.03 },
   /** Blended hard-light @ 30%, as in Figma. */
-  scan: { src: asset("card/scan-effect.png"), w: 1102, h: 1416, depth: 4, zoom: 1.02 },
+  scan: { src: asset("card/scan-effect.png"), w: 1102, h: 1416, depth: 8, zoom: 1.02 },
 } satisfies Record<string, WindowLayer>;
 
 export interface Decal {
