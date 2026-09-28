@@ -30,7 +30,7 @@ export interface WindowLayer {
 
 export const WINDOW_LAYERS = {
   /** Dark shape + curve lines. Its alpha is also the window mask. */
-  bg: { src: asset("card/moving-inside-elements.png"), w: 1102, h: 1429, depth: 26, zoom: 1.05 },
+  bg: { src: asset("card/moving-inside-elements.png"), w: 1102, h: 1429, depth: 24, zoom: 1.05 },
   photo: { src: asset("card/my-photo.png"), w: 1102, h: 1421, depth: 12, zoom: 1.03 },
   /** Blended hard-light @ 30%, as in Figma. */
   scan: { src: asset("card/scan-effect.png"), w: 1102, h: 1416, depth: 4, zoom: 1.02 },
@@ -53,14 +53,14 @@ const wx = WINDOW.x;
 const wy = WINDOW.y;
 
 export const DECALS: Decal[] = [
-  { name: "name", src: asset("card/name.png"), x: 96, y: 53, w: 948, h: 71, lift: 6 },
-  { name: "star", src: asset("card/star.png"), x: wx + 959, y: wy + 88, w: 64, h: 72, lift: 8 },
-  { name: "upwork", src: asset("card/upwork.png"), x: wx + 855, y: wy + 90, w: 72, h: 72, lift: 8 },
-  { name: "cod", src: asset("card/cod.png"), x: wx + 851, y: wy + 1028, w: 176, h: 64, lift: 5 },
-  { name: "signature", src: asset("card/signature.png"), x: wx + 59, y: wy + 995, w: 384, h: 130, lift: 8 },
-  { name: "uix-ui", src: asset("card/uix-ui.png"), x: wx + 60, y: wy + 1194, w: 393, h: 159, lift: 7 },
+  { name: "name", src: asset("card/name.png"), x: 96, y: 53, w: 948, h: 71, lift: 4 },
+  { name: "star", src: asset("card/star.png"), x: wx + 959, y: wy + 88, w: 64, h: 72, lift: 4 },
+  { name: "upwork", src: asset("card/upwork.png"), x: wx + 855, y: wy + 90, w: 72, h: 72, lift: 4 },
+  { name: "cod", src: asset("card/cod.png"), x: wx + 851, y: wy + 1028, w: 176, h: 64, lift: 4 },
+  { name: "signature", src: asset("card/signature.png"), x: wx + 59, y: wy + 995, w: 384, h: 130, lift: 4 },
+  { name: "uix-ui", src: asset("card/uix-ui.png"), x: wx + 60, y: wy + 1194, w: 393, h: 159, lift: 4 },
   // 7-yoe has a 4px outside stroke, so the PNG is 8px larger than the vector node.
-  { name: "7-yoe", src: asset("card/7-yoe.png"), x: 895, y: 1357, w: 141, h: 153, lift: 7 },
+  { name: "7-yoe", src: asset("card/7-yoe.png"), x: 895, y: 1357, w: 141, h: 153, lift: 4 },
 ];
 
 export const CARD_BASE = asset("card/bg-image-green.webp");
@@ -114,9 +114,9 @@ export interface Extra {
 }
 
 export const EXTRAS: Extra[] = [
-  { name: "bitcoin", src: asset("extras/bitcoin.png"), x: -546, y: 834, width: 310, z: -800, rotation: 0, drift: -30, blur: 0 },
-  { name: "chinese-coin", src: asset("extras/chinese-coin.png"), x: 566, y: -902, width: 362, z: 800, rotation: 0, drift: 45, blur: 0 },
-  { name: "unicorn", src: asset("extras/unicorn.webp"), x: -346, y: -1291, width: 740, z: 950, rotation: 0.32, drift: 80, blur: 1.6 },
+  { name: "bitcoin", src: asset("extras/bitcoin.png"), x: -546, y: 834, width: 310, z: -800, rotation: 0, drift: -24, blur: 0 },
+  { name: "chinese-coin", src: asset("extras/chinese-coin.png"), x: 566, y: -902, width: 362, z: 800, rotation: 0, drift: 40, blur: 0 },
+  { name: "unicorn", src: asset("extras/unicorn.webp"), x: -346, y: -1291, width: 740, z: 950, rotation: 0.32, drift: 64, blur: 1.6 },
 ];
 
 /** Card-px (top-left origin, y down) → local world coords (card centre origin, y up). */
