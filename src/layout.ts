@@ -92,9 +92,9 @@ export const STAGE = { w: 1565, h: 2866, cardOffsetY: 93 };
  */
 export const MOTION = {
   /** Max left/right turn, degrees (was 24, then 12). */
-  maxYawDeg: 8,
+  maxYawDeg: 12,
   /** Max up/down turn, degrees (was 18, then 9). */
-  maxPitchDeg: 6,
+  maxPitchDeg: 12,
   /** Phone tilt (degrees) that produces the max turn. Higher = less sensitive. */
   gyroRangeDeg: 30,
   /** How quickly the card catches up with input. Higher = snappier. */
