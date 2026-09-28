@@ -7,6 +7,7 @@ import {
   DECALS,
   EXTRAS,
   HOLO,
+  HOLO_STRENGTH,
   MOTION,
   PAGE_BG,
   STAGE,
@@ -162,7 +163,7 @@ const holoUniforms = {
   uTilt: { value: new THREE.Vector2() },
   uSize: { value: new THREE.Vector2(W, H) },
   uRadius: { value: CARD.radius },
-  uStrength: { value: 0.2 },
+  uStrength: { value: HOLO_STRENGTH },
 };
 const holoMat = new THREE.ShaderMaterial({
   ...holoShader,

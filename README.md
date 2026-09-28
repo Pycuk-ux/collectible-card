@@ -19,8 +19,9 @@ npm run dev
   (hard-light 30 %) drift at different depths inside the torn-edge mask (`WINDOW_LAYERS[].depth`).
 - **Raised elements**: name, signature, UX/UI, icons, barcode and 7 YOE sit a
   few px above the card surface (`DECALS[].lift`), so they separate slightly on tilt.
-- **Holographic laminate**: `holographic-layer.png` drives an additive rainbow
-  foil, a gloss band and a glare that react to tilt (`src/shaders.ts`, strength in `src/main.ts`).
+- **Holographic laminate**: `HOLO` in `src/layout.ts` picks the pattern (atoms now;
+  the original text pattern is kept in `HOLO_PATTERNS`). The pattern drives an additive rainbow
+  foil, a gloss band and a glare that react to tilt (`src/shaders.ts`, strength `HOLO_STRENGTH`).
 - **Stage**: the page follows the phone mockup and the background never moves. `website-bg.png` (1565 × 2866) is
   the stage at card scale; the Bitcoin (behind the card), Chinese coin and
   blurred unicorn (in front) are placed by their mockup positions in `EXTRAS`

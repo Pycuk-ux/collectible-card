@@ -64,7 +64,19 @@ export const DECALS: Decal[] = [
 ];
 
 export const CARD_BASE = asset("card/bg-image-green.webp");
-export const HOLO = asset("card/holographic-layer.png");
+/**
+ * Holographic laminate patterns. Only HOLO is shown; the others are kept for
+ * later — point HOLO at one of them to switch.
+ */
+export const HOLO_PATTERNS = {
+  /** Original: CRYPTO / DESIGN / FINTECH text pattern. Hidden for now. */
+  text: asset("card/holographic-layer.png"),
+  /** Current: atom / orbit symbols. */
+  atoms: asset("card/holographic-layer-2.png"),
+};
+export const HOLO = HOLO_PATTERNS.atoms;
+/** Laminate strength: 1 = full effect as first built, 0 = off. */
+export const HOLO_STRENGTH = 0.2;
 export const PAGE_BG = asset("website-bg.png");
 
 /**
@@ -79,14 +91,14 @@ export const STAGE = { w: 1565, h: 2866, cardOffsetY: 93 };
  * The card tilts toward the cursor / follows the phone, up to these angles.
  */
 export const MOTION = {
-  /** Max left/right turn, degrees (was 24). */
-  maxYawDeg: 12,
-  /** Max up/down turn, degrees (was 18). */
-  maxPitchDeg: 9,
+  /** Max left/right turn, degrees (was 24, then 12). */
+  maxYawDeg: 8,
+  /** Max up/down turn, degrees (was 18, then 9). */
+  maxPitchDeg: 6,
   /** Phone tilt (degrees) that produces the max turn. Higher = less sensitive. */
-  gyroRangeDeg: 22,
+  gyroRangeDeg: 30,
   /** How quickly the card catches up with input. Higher = snappier. */
-  smoothing: 7,
+  smoothing: 6,
   /** Swipe distance, as a fraction of screen width, for a half turn (front → back). */
   swipeHalfTurn: 0.55,
 };
