@@ -5,9 +5,9 @@ https://pycuk-ux.github.io/collectible-card/ stays as it is until this is ready.
 
 ## Idea
 
-A QR code on the back of the printed card opens the site. The visitor sees 3–5
-face-down cards, picks one, and it opens with a light-burst animation to reveal
-their prize. Reference: a gift-box opening video (idle → tap → shake → light
+A QR code on the back of the printed card opens the site. The visitor sees a
+sealed foil card pack, tears it open, and light bursts out to reveal their
+prize card. Motion reference: a gift-box opening video (idle → tap → shake → light
 burst + flash → prize swings in → idle shine, about 17 s in total).
 
 ## Chosen direction: open a foil card pack
