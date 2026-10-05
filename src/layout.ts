@@ -82,12 +82,15 @@ export const HOLO_STRENGTH = 0.2;
 export const PAGE_BG = asset("website-bg.png");
 
 /**
- * Tappable buttons on the back artwork (card px, top-left origin). Measured
- * from the yellow stickers in the export; they open in a new tab.
+ * Tappable links on the back artwork (card px, top-left origin). The text is
+ * only ~34px tall, so each area is padded well beyond it to make a
+ * comfortable finger target (about 40px tall on a phone). They open in a new tab.
  */
 export const BACK_LINKS = [
-  { name: "Telegram", url: "https://t.me/r_youlife", x: 464, y: 1212, w: 468, h: 110 },
-  { name: "LinkedIn", url: "https://www.linkedin.com/in/ruslan-iulaev/", x: 225, y: 1369, w: 441, h: 107 },
+  // "LINKEDIN ↗" text at x 132–459, y 1374–1408
+  { name: "LinkedIn", url: "https://www.linkedin.com/in/ruslan-iulaev/", x: 100, y: 1311, w: 440, h: 160 },
+  // "TELEGRAM ↗" text at x 640–1006, y 1374–1408
+  { name: "Telegram", url: "https://t.me/r_youlife", x: 600, y: 1311, w: 440, h: 160 },
 ];
 
 /**
