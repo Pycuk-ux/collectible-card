@@ -64,7 +64,7 @@ export const DECALS: Decal[] = [
 ];
 
 export const CARD_BASE = asset("card/bg-image-green.webp");
-/** Back side artwork (1425 × 2000, same proportions as the card). */
+/** Back side artwork (Figma node 521:745, 1140 × 1600). */
 export const CARD_BACK = asset("card/back.webp");
 /**
  * Holographic laminate patterns. Only HOLO is shown; the others are kept for
