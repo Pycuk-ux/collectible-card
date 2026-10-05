@@ -28,9 +28,10 @@ npm run dev
   and tilt together with the card as one scene (movement comes only from real depth)
   (`public/extras/`).
 - **Back**: `public/card/back.webp` (`CARD_BACK`), under the same holographic laminate as the front.
+  The Telegram and LinkedIn stickers are tappable (`BACK_LINKS`) and open in a new tab.
 - **Input**: cursor on desktop, gyroscope on phones (iOS asks via an
   "Enable motion" button). With no input the card holds still. Swipe (or drag)
-  left/right to spin it. All motion limits live in `MOTION` in `src/layout.ts`.
+  left/right to spin it (at most 180° per swipe). All motion limits live in `MOTION` in `src/layout.ts`.
 
 ## Hosting
 

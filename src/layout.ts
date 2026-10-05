@@ -64,7 +64,7 @@ export const DECALS: Decal[] = [
 ];
 
 export const CARD_BASE = asset("card/bg-image-green.webp");
-/** Back side artwork (Figma node 521:745, 1140 × 1600). */
+/** Back side artwork (Figma node 521:2370, 1140 × 1600). */
 export const CARD_BACK = asset("card/back.webp");
 /**
  * Holographic laminate patterns. Only HOLO is shown; the others are kept for
@@ -80,6 +80,15 @@ export const HOLO = HOLO_PATTERNS.atoms;
 /** Laminate strength: 1 = full effect as first built, 0 = off. */
 export const HOLO_STRENGTH = 0.2;
 export const PAGE_BG = asset("website-bg.png");
+
+/**
+ * Tappable buttons on the back artwork (card px, top-left origin). Measured
+ * from the yellow stickers in the export; they open in a new tab.
+ */
+export const BACK_LINKS = [
+  { name: "Telegram", url: "https://tglink.ru/r_youlife", x: 464, y: 1212, w: 468, h: 110 },
+  { name: "LinkedIn", url: "https://www.linkedin.com/in/ruslan-iulaev/", x: 225, y: 1369, w: 441, h: 107 },
+];
 
 /**
  * The page is laid out like the Figma mockup: website-bg.png (1565 × 2866) is
@@ -106,7 +115,7 @@ export const MOTION = {
    * scene; 0.5 = half, so they move half as far). Was 1.
    */
   extrasFollow: 0.5,
-  /** Swipe distance, as a fraction of screen width, for a half turn (front → back). */
+  /** Swipe distance, as a fraction of screen width, for a half turn (front → back). One swipe turns at most 180°. */
   swipeHalfTurn: 0.55,
 };
 

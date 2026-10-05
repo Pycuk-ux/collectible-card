@@ -7,6 +7,7 @@ import {
   CARD_BACK,
   DECALS,
   EXTRAS,
+  BACK_LINKS,
   HOLO,
   HOLO_STRENGTH,
   MOTION,
@@ -193,10 +194,11 @@ DECALS.forEach((d, i) => {
   frontFace.add(mesh);
 });
 
+let backMesh: THREE.Mesh;
 // Back of the card: the back artwork under the same holographic laminate as
 // the front (shared material, so pattern, strength and tilt response match).
 {
-  const back = new THREE.Mesh(face, new THREE.MeshBasicMaterial({ map: backTex, transparent: true, ...layer }));
+  const back = (backMesh = new THREE.Mesh(face, new THREE.MeshBasicMaterial({ map: backTex, transparent: true, ...layer })));
   back.rotation.y = Math.PI;
   back.position.z = -FRONT - 0.1;
   back.renderOrder = ORDER.base;
@@ -309,39 +311,68 @@ if (input.needsMotionPermission) {
 
 // Swipe left or right to spin the card, like flicking a real one. It follows
 // the finger while held, keeps the release speed, then settles on a face.
+// One swipe turns the card at most 180° (front ↔ back), never a full spin.
 let flip = 0;
 let flipTarget = 0;
 let flipVel = 0;
-let drag: { x: number; flip: number; lastX: number; lastT: number; vel: number } | null = null;
+let drag: { x: number; y: number; t: number; flip: number; face: number; lastX: number; lastT: number; vel: number } | null = null;
+let lastTap = false;
 const radPerPx = () => Math.PI / (window.innerWidth * MOTION.swipeHalfTurn);
+
+// Links on the back: find which button (if any) is under the pointer.
+const raycaster = new THREE.Raycaster();
+const ndc = new THREE.Vector2();
+function linkAt(clientX: number, clientY: number) {
+  if (!backFace.visible) return null;
+  ndc.set((clientX / window.innerWidth) * 2 - 1, -(clientY / window.innerHeight) * 2 + 1);
+  raycaster.setFromCamera(ndc, camera);
+  const uv = raycaster.intersectObject(backMesh)[0]?.uv;
+  if (!uv) return null;
+  const x = uv.x * W;
+  const y = (1 - uv.y) * H;
+  return BACK_LINKS.find((l) => x >= l.x && x <= l.x + l.w && y >= l.y && y <= l.y + l.h) ?? null;
+}
 
 canvas.addEventListener("pointerdown", (e) => {
   canvas.setPointerCapture(e.pointerId);
-  drag = { x: e.clientX, flip, lastX: e.clientX, lastT: performance.now(), vel: 0 };
+  const now = performance.now();
+  drag = { x: e.clientX, y: e.clientY, t: now, flip, face: flipTarget, lastX: e.clientX, lastT: now, vel: 0 };
   input.paused = true;
 });
 canvas.addEventListener("pointermove", (e) => {
-  if (!drag) return;
+  if (!drag) {
+    canvas.style.cursor = linkAt(e.clientX, e.clientY) ? "pointer" : "";
+    return;
+  }
   const now = performance.now();
   const dtMs = Math.max(1, now - drag.lastT);
   const v = ((e.clientX - drag.lastX) * radPerPx() * 1000) / dtMs;
   drag.vel = drag.vel * 0.6 + v * 0.4;
   drag.lastX = e.clientX;
   drag.lastT = now;
-  flip = drag.flip + (e.clientX - drag.x) * radPerPx();
+  // Never more than half a turn away from the face the swipe started on.
+  flip = THREE.MathUtils.clamp(drag.flip + (e.clientX - drag.x) * radPerPx(), drag.face - Math.PI, drag.face + Math.PI);
 });
-function release() {
+function release(e: PointerEvent) {
   if (!drag) return;
+  lastTap = Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 8 && performance.now() - drag.t < 500;
   const vel = performance.now() - drag.lastT > 80 ? 0 : drag.vel;
-  // Where the spin would coast to, snapped to the nearest face (max one extra turn).
-  const coast = flip + THREE.MathUtils.clamp(vel * 0.18, -Math.PI * 1.5, Math.PI * 1.5);
-  flipTarget = Math.round(coast / Math.PI) * Math.PI;
-  flipVel = vel;
+  // Where the spin would coast to, snapped to the nearest face: the same face
+  // or the one next to it, so a swipe flips the card at most 180°.
+  const coast = flip + vel * 0.18;
+  flipTarget = THREE.MathUtils.clamp(Math.round(coast / Math.PI) * Math.PI, drag.face - Math.PI, drag.face + Math.PI);
+  flipVel = THREE.MathUtils.clamp(vel, -12, 12);
   drag = null;
   input.paused = false;
 }
 canvas.addEventListener("pointerup", release);
 canvas.addEventListener("pointercancel", release);
+// A tap (not a swipe) on a back button opens it in a new tab.
+canvas.addEventListener("click", (e) => {
+  if (!lastTap) return;
+  const link = linkAt(e.clientX, e.clientY);
+  if (link) window.open(link.url, "_blank", "noopener");
+});
 
 // ─── Loop ───────────────────────────────────────────────────────────────────
 
