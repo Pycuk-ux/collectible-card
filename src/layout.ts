@@ -86,7 +86,7 @@ export const PAGE_BG = asset("website-bg.png");
  * from the yellow stickers in the export; they open in a new tab.
  */
 export const BACK_LINKS = [
-  { name: "Telegram", url: "https://tglink.ru/r_youlife", x: 464, y: 1212, w: 468, h: 110 },
+  { name: "Telegram", url: "https://t.me/r_youlife", x: 464, y: 1212, w: 468, h: 110 },
   { name: "LinkedIn", url: "https://www.linkedin.com/in/ruslan-iulaev/", x: 225, y: 1369, w: 441, h: 107 },
 ];
 
