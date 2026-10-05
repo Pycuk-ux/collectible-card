@@ -297,7 +297,26 @@ resize();
 
 // ─── Interaction ────────────────────────────────────────────────────────────
 
-const input = new TiltInput(document.body, MOTION.gyroRangeDeg, MOTION.smoothing);
+/** Piecewise-linear lookup in a [phone°, card°] table, mirrored for negative tilt. */
+function curve(points: [number, number][], deg: number) {
+  const a = Math.abs(deg);
+  let out = points[points.length - 1][1];
+  for (let i = 1; i < points.length; i++) {
+    const [x0, y0] = points[i - 1];
+    const [x1, y1] = points[i];
+    if (a <= x1) {
+      out = y0 + ((a - x0) / (x1 - x0)) * (y1 - y0);
+      break;
+    }
+  }
+  return Math.sign(deg) * out;
+}
+const input = new TiltInput(
+  document.body,
+  (deg) => curve(MOTION.yawCurve, deg) / MOTION.maxYawDeg,
+  (deg) => deg / MOTION.gyroRangeDeg,
+  MOTION.smoothing,
+);
 
 if (input.needsMotionPermission) {
   motionBtn.hidden = false;

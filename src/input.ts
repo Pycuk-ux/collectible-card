@@ -16,9 +16,14 @@ export class TiltInput {
   /** While the card is being swiped, the pointer spins it instead of tilting it. */
   paused = false;
 
+  /**
+   * mapX / mapY turn a phone tilt in degrees (signed, from the starting pose)
+   * into a card tilt in [-1, 1].
+   */
   constructor(
     private el: HTMLElement,
-    private gyroRange = 22,
+    private mapX: (deg: number) => number,
+    private mapY: (deg: number) => number,
     private smoothing = 7,
   ) {
     el.addEventListener("pointermove", this.onPointer);
@@ -62,8 +67,8 @@ export class TiltInput {
     const gamma = landscape ? -e.beta : e.gamma;
     // First reading = how the user naturally holds the phone.
     if (!this.gyroBase) this.gyroBase = { beta, gamma };
-    this.target.x = clamp((gamma - this.gyroBase.gamma) / this.gyroRange);
-    this.target.y = clamp((beta - this.gyroBase.beta) / this.gyroRange);
+    this.target.x = clamp(this.mapX(gamma - this.gyroBase.gamma));
+    this.target.y = clamp(this.mapY(beta - this.gyroBase.beta));
     this.usingGyro = true;
   };
 

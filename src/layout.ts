@@ -103,10 +103,24 @@ export const STAGE = { w: 1565, h: 2866, cardOffsetY: 93 };
  */
 export const MOTION = {
   /** Max left/right turn, degrees (was 24, then 12). */
-  maxYawDeg: 12,
+  maxYawDeg: 16,
+  /**
+   * Phone tilt left/right → card turn, as [phone degrees, card degrees] points.
+   * Values in between are interpolated; past the last point the card stays at
+   * its max. The cursor on desktop still maps linearly up to maxYawDeg.
+   */
+  yawCurve: [
+    [0, 0],
+    [5, 4],
+    [10, 8],
+    [15, 10],
+    [20, 12],
+    [25, 14],
+    [30, 16],
+  ] as [number, number][],
   /** Max up/down turn, degrees (was 18, then 9). */
   maxPitchDeg: 12,
-  /** Phone tilt (degrees) that produces the max turn. Higher = less sensitive. */
+  /** Phone tilt up/down (degrees) that produces the max up/down turn (linear). */
   gyroRangeDeg: 30,
   /** How quickly the card catches up with input. Higher = snappier. */
   smoothing: 6,
